@@ -19,7 +19,7 @@ Set up ohbot by following the instructions [here](https://github.com/ohbot/ohbot
 When that is complete you need to follow these steps to make a local AI server on your computer
 1. Download [Ollama](https://ollama.com/)
 Open the application and go through the setup mode so it's installed
-2. Open powershell and run the below commands
+2. Open powershell and run the below commands:
 
 To start the chatbot
 ```
