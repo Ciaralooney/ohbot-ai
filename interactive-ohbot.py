@@ -24,9 +24,13 @@ while True:
     user_input = input("You: ")
     if user_input.lower() == "exit":
         # Closing down ohbot
+        ohbot.reset()
+        ohbot.close()
         break
     fetched_response = get_response(user_input)
     print(f"Ohbot: {fetched_response}")
     ohbot_speak(fetched_response)
 
+# If the program closes unexpectedly ohbot should still shut down properly
+ohbot.reset()
 ohbot.close()
