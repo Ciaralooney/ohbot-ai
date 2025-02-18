@@ -1,4 +1,4 @@
-Ohbot - An AI Companion
+# Ohbot - An AI Companion
 
 ## Python Setup
 Download [Pycharm](https://www.jetbrains.com/pycharm/download/?section=windows)
