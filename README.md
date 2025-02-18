@@ -1,4 +1,3 @@
-# ohbot-ai
 Ohbot - An AI Companion
 
 ## Python Setup
@@ -45,11 +44,10 @@ ollama create new-phi --file myllama3.modelfile
 ```
 to apply your changes to your AI model.
 
-When you run 
+When you run the command below you should see the new custom AI model you have set up. 
 ```
  ollama list
 ```
-you should see the new custom AI model you have set up. 
 ![image](https://github.com/user-attachments/assets/2394a6c9-a0e6-4afa-a8e2-faf095a45f45)
 
 I have switched to using this in my code but left the option for llama3 for anyone who does not wish to set this part up
