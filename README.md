@@ -6,12 +6,9 @@ Download [Pycharm](https://www.jetbrains.com/pycharm/download/?section=windows)
 
 Download and setup [python 3.10](https://www.python.org/downloads/release/python-3100/)
 
-Download the following python libraries using these commands
+Download the following python libraries using this command
 ```
-pip install ollama
-pip install comptypes
-pip install wheel
-pip install ohbot
+pip install ohbot ollama comptypes wheel SpeechRecognition pyaudio
 ```
 
 Set up ohbot by following the instructions [here](https://github.com/ohbot/ohbot-python/tree/master) according to your operating system
