@@ -27,7 +27,7 @@ To start the server. (Before doing this, check the windows toolbar and close any
 ollama serve
 ```
 
-If you would like to personalise the AI prompt 
+### If you would like to personalise the AI prompt 
 ```
 ollama show llama3:latest --modelfile > myllama3.modelfile
 ```
@@ -51,5 +51,6 @@ When you run
 ```
 you should see the new custom AI model you have set up. 
 ![image](https://github.com/user-attachments/assets/2394a6c9-a0e6-4afa-a8e2-faf095a45f45)
+
 I have switched to using this in my code but left the option for llama3 for anyone who does not wish to set this part up
 
