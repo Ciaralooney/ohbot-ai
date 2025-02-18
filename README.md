@@ -3,7 +3,9 @@ Ohbot - An AI Companion
 
 # How to set up
 Download [Pycharm](https://www.jetbrains.com/pycharm/download/?section=windows)
+
 Download and setup [python 3.10](https://www.python.org/downloads/release/python-3100/)
+
 Download the following python libraries using these commands
 ```
 pip install ollama
