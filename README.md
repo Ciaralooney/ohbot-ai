@@ -37,6 +37,7 @@ Your file should be in this location
 Edit the file with notepad
 You should add paramters like these depending on your goal
 <img src="https://github.com/user-attachments/assets/c99af10b-4169-42df-bdf9-3a72820d68e5" height="194" width="546" />
+
 Save your text file and then run 
 ```
 ollama create new-phi --file myllama3.modelfile
