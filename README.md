@@ -39,5 +39,9 @@ Your file should be in this location
 Edit the file with notepad
 You should add paramters like these depedning on your goal
 ![image](https://github.com/user-attachments/assets/1fc9dee8-de1c-40f8-bfff-d1b01b1f6fbb)
-
+Save your text file and then run 
+```
+ollama create new-phi --file myllama3.modelfile
+```
+to apply your changes to your AI model.
 
