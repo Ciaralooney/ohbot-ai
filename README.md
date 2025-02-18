@@ -35,7 +35,9 @@ If you would like to personalise the AI prompt
 ollama show llama3:latest --modelfile > myllama3.modelfile
 ```
 Your file should be in this location 
+
 ![image](https://github.com/user-attachments/assets/fad576c5-e827-40d3-8443-8b3b5779f7bb)
+
 Edit the file with notepad
 You should add paramters like these depending on your goal
 ![image](https://github.com/user-attachments/assets/c99af10b-4169-42df-bdf9-3a72820d68e5)
