@@ -10,7 +10,8 @@ def ohbot_speak(text):
 
 def get_response(prompt):
     response = ollama.chat(
-        model="llama3",
+        model="new-phi",  # custom AI, if you haven't set one up use llama3
+        # model="llama3",
         messages=[
             {
                 "role": "user",
