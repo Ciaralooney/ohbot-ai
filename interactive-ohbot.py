@@ -1,11 +1,10 @@
 from ohbot import ohbot
 import ollama
+import speech_recognition as sr
+from pocketsphinx import LiveSpeech
 
-# Starting up Ohbot
-ohbot.reset()
-ohbot.init()
 
-def ohbot_speak(text):
+def ohbot_text_to_speech(text):
     ohbot.say(text)
 
 def get_response(prompt):
@@ -21,17 +20,35 @@ def get_response(prompt):
     )
     return response["message"]["content"]
 
-while True:
-    user_input = input("You: ")
-    if user_input.lower() == "exit":
-        # Closing down ohbot
-        ohbot.reset()
-        ohbot.close()
-        break
-    fetched_response = get_response(user_input)
-    print(f"Ohbot: {fetched_response}")
-    ohbot_speak(fetched_response)
+def speech_to_text():
+    # Using the microphone and converting it to text
+    with sr.Microphone() as source:
+        print("Start talking...")
+        audio = recognizer.listen(source)
+        try:
+            text = recognizer.recognize_sphinx(audio)
+            print("You said: " + text)
+        except sr.UnknownValueError:
+            print("Sorry, Can you repeat that?")
 
-# If the program closes unexpectedly ohbot should still shut down properly
-ohbot.reset()
-ohbot.close()
+if __name__ == '__main__':
+    # Starting up Ohbot
+    ohbot.reset()
+
+    recognizer = sr.Recognizer()
+    speech_to_text()
+
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == "exit":
+            # Closing down ohbot
+            ohbot.reset()
+            ohbot.close()
+            break
+        fetched_response = get_response(user_input)
+        print(f"Ohbot: {fetched_response}")
+        ohbot_text_to_speech(fetched_response)
+
+    # If the program closes unexpectedly ohbot should still shut down properly
+    ohbot.reset()
+    ohbot.close()
