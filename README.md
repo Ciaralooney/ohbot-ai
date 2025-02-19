@@ -29,7 +29,7 @@ Open the application and go through the setup mode so it's installed
 
 To start the chatbot
 ```
-ollama run llama3
+ollama run llama3.2-vision
 ```
 To start the server. (Before doing this, check the windows toolbar and close any open Ollama programs)
 ```
@@ -38,7 +38,7 @@ ollama serve
 
 ### If you would like to personalise the AI prompt 
 ```
-ollama show llama3:latest --modelfile > myllama3.modelfile
+ollama show llama3.2-vision:latest --modelfile > newai.modelfile
 ```
 Your file should be in this location 
 
@@ -50,7 +50,7 @@ You should add paramters like these depending on your goal
 
 Save your text file and then run 
 ```
-ollama create new-phi --file myllama3.modelfile
+ollama create new-phi --file newai.modelfile
 ```
 to apply your changes to your AI model.
 
