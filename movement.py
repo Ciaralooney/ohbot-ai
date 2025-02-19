@@ -60,19 +60,7 @@ def idle_animation_timer(seconds):
     while time.time() - start_time < seconds:
         natural_head_movement()
         random_blink()
-'''
-def idle_animation():
-    print("Type exit to stop movement ")
-    while True:
-        natural_head_movement()
-        random_blink()
-        user_input = input()
-        if user_input.lower() == "exit":
-            shutdown()
-            print("Ohbot has been shut down and is ready to be powered off.")
-            break
 
-'''
 def idle_animation():
     print("Type exit to stop movement ")
     while not close_program.is_set():
