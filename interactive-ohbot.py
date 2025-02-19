@@ -1,6 +1,7 @@
 from ohbot import ohbot
 import ollama
 import speech_recognition as sr
+from movement import *
 from pocketsphinx import LiveSpeech
 
 
@@ -34,9 +35,10 @@ def speech_to_text():
 if __name__ == '__main__':
     # Starting up Ohbot
     ohbot.reset()
-
+    movement_sequence()
+    
     recognizer = sr.Recognizer()
-    speech_to_text()
+    #speech_to_text()
 
     while True:
         user_input = input("You: ")
