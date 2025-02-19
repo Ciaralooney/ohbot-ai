@@ -1,4 +1,4 @@
-from cv2 import VideoCapture, imshow, imwrite, waitKey, destroyWindow
+from cv2 import VideoCapture, imwrite
 from ohbot import ohbot
 import ollama
 import speech_recognition as sr
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     while True:
         user_input = input("You: ")
         if user_input.lower() == "what is this":
-            captured_photo=take_image()
+            captured_photo = take_image()
             identify_image(captured_photo)
         elif user_input.lower() == "exit":
             stop_conversation.set()
