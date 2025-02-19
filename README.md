@@ -7,7 +7,7 @@ Download and setup [python 3.10](https://www.python.org/downloads/release/python
 
 Download the following python libraries using this command
 ```
-pip install ohbot ollama comptypes wheel SpeechRecognition pyaudio pocketsphinx
+pip install wheel ohbot ollama comptypes SpeechRecognition pyaudio pocketsphinx
 ```
 ## Ohbot Setup
 Set up ohbot by following the instructions [here](https://github.com/ohbot/ohbot-python/tree/master) according to your operating system
