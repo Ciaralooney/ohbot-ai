@@ -10,8 +10,15 @@ Download the following python libraries using this command
 pip install "comtypes==1.1.7"
 ```
 ```
-pip install wheel ohbot ollama SpeechRecognition pyaudio pocketsphinx random time threading opencv-python
+pip install wheel ohbot ollama SpeechRecognition pyaudio pocketsphinx random time threading
 ```
+```
+pip install scikit-build cmake 
+```
+```
+pip install opencv-python
+```
+
 ## Ohbot Setup
 Set up ohbot by following the instructions [here](https://github.com/ohbot/ohbot-python/tree/master) according to your operating system
 
