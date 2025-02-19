@@ -1,3 +1,4 @@
+from cv2 import VideoCapture, imshow, imwrite, waitKey, destroyWindow
 from ohbot import ohbot
 import ollama
 import speech_recognition as sr
@@ -11,8 +12,8 @@ def ohbot_text_to_speech(text):
 
 def get_response(prompt):
     response = ollama.chat(
-        model="new-phi",  # custom AI, if you haven't set one up use llama3
-        # model="llama3",
+        model="new-phi",  # custom AI, if you haven't set one up use llama3.2-vision
+        # model="llama3.2-vision",
         messages=[
             {
                 "role": "user",
@@ -34,6 +35,45 @@ def speech_to_text():
         except sr.UnknownValueError:
             print("Sorry, Can you repeat that?")
 
+def take_image():
+    # This is a work in progress
+    # Take an image using the computers webcam
+
+    cam_port = 0
+    camera = VideoCapture(cam_port)
+    # taking photo
+    success, image = camera.read()
+    file = "Capture.png"
+    if success:
+        imwrite(file, image)  # Saving image
+
+        # Starting thread for image identification
+        image_thread = threading.Thread(target=identify_image, args=(file,))
+        image_thread.start()
+
+        return file
+    else:
+        print("No camera found")
+
+
+def identify_image(image):
+    # This is a work in progress
+    # Using llama3 to identify the object
+    response = ollama.chat(
+        model="llama3.2-vision",
+        messages=[{
+            "role": "user",
+            "content": "What is the object I am holding?",
+            "images": [image]
+        }],
+    )
+
+    # Extract the model's response about the image
+    text = response['message']['content'].strip()
+    print(f"Ohbot: {text}")
+    # Sending the text to ohbot to speak
+    ohbot_text_to_speech(text)
+
 def background_animation():
     while not stop_conversation.is_set():
         natural_head_movement()
@@ -51,7 +91,10 @@ if __name__ == '__main__':
 
     while True:
         user_input = input("You: ")
-        if user_input.lower() == "exit":
+        if user_input.lower() == "what is this":
+            captured_photo=take_image()
+            identify_image(captured_photo)
+        elif user_input.lower() == "exit":
             stop_conversation.set()
             # Closing down ohbot
             shutdown()
