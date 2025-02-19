@@ -59,9 +59,10 @@ def take_image():
 def identify_image(image):
     # This is a work in progress
     # Using llama3 to identify the object
-
     response = ollama.chat(
-        model="llama3.2-vision",
+        #model="llama3.2-vision",
+        model = "new-phi",  # custom AI, if you haven't set one up use llama3.2-vision
+        # model="llama3.2-vision",
         messages=[{
             "role": "user",
             "content": "What is the object I am holding?",
