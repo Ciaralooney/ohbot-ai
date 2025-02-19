@@ -1,8 +1,8 @@
 from ohbot import ohbot
 import random
+import time
 
 ohbot.reset()
-
 
 def move_head():
     # Head is moved in a random direction
@@ -37,7 +37,30 @@ def movement_sequence():
     move_eyes()
     ohbot.wait(1)
 
+def natural_head_movement():
+    ohbot.move(ohbot.HEADNOD, random.uniform(4, 6))
+    ohbot.move(ohbot.HEADTURN, random.uniform(4, 6))
+    time.sleep(random.uniform(2, 5))
+    ohbot.move(ohbot.HEADNOD, random.uniform(4, 6))
+    ohbot.move(ohbot.HEADTURN, random.uniform(4, 6))
+    time.sleep(random.uniform(2, 5))
+
+def random_blink():
+    ohbot.move(ohbot.EYELIDBLINK, 0)
+    time.sleep(0.2)
+    ohbot.move(ohbot.EYELIDBLINK, 10)
+    # Random time until it blinks again
+    time.sleep(random.uniform(3, 10))
+
+def idle_animation(seconds):
+    start_time = time.time()
+    while time.time() - start_time < seconds:
+        natural_head_movement()
+        random_blink()
+
 if __name__ == '__main__':
     movement_sequence()
+    # Running tape for 60 seconds
+    idle_animation(60)
     ohbot.reset()
     ohbot.close()
