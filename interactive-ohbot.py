@@ -59,6 +59,7 @@ def take_image():
 def identify_image(image):
     # This is a work in progress
     # Using llama3 to identify the object
+
     response = ollama.chat(
         model="llama3.2-vision",
         messages=[{
@@ -68,8 +69,7 @@ def identify_image(image):
         }],
     )
 
-    # Extract the model's response about the image
-    text = response['message']['content'].strip()
+    text = response["message"]["content"].strip()
     print(f"Ohbot: {text}")
     # Sending the text to ohbot to speak
     ohbot_text_to_speech(text)
