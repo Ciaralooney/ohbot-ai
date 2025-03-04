@@ -22,7 +22,7 @@ pip install opencv-python
 
 ## Ohbot Setup
 Set up ohbot by following the instructions [here](https://github.com/ohbot/ohbot-python/tree/master) according to your operating system
-
+# Ollama
 ## How to create a local AI server on your computer
 1. Download [Ollama](https://ollama.com/)
 Open the application and go through the setup mode so it's installed
@@ -63,3 +63,22 @@ When you run the command below you should see the new custom AI model you have s
 
 I have switched to using this in my code but left the option for llama3 for anyone who does not wish to set this part up
 
+# Gen AI 
+This version is dependant on your own API key and internet connection but it is much faster. 
+
+To install the necessary python libraries you should run all of the commands below
+```
+pip install os openai httpx dotenv transformers PIL torch
+```
+```
+pip install "comtypes==1.1.7"
+```
+```
+pip install wheel ohbot ollama SpeechRecognition pyaudio pocketsphinx random time threading
+```
+```
+pip install scikit-build cmake 
+```
+```
+pip install opencv-python
+```
