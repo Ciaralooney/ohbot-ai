@@ -12,6 +12,9 @@ import os
 import openai
 import httpx
 from dotenv import load_dotenv
+from transformers import LlavaForImageClassification, LlavaProcessor
+from PIL import Image
+import torch
 
 load_dotenv('.env', override=True)
 
@@ -27,13 +30,14 @@ client = OpenAI(
 # Settings for our AI model
 streaming = True
 max_output_tokens = 200
+custom = os.getenv("custom_ai")
 
 available_models = ["mixtral-8x7b-instruct-v01", "llamaguard-7b", "mistral-7b-instruct-v03", "phi-3-mini-128k-instruct",
                     "phi-3-5-moe-instruct", "llama-3-8b-instruct", "llama-3-1-8b-instruct", "llama-3-2-3b-instruct",
                     "codellama-13b-instruct", "sqlcoder-7b-2", "codestral-22b-v0-1"]
 
 # Selecting a model
-model_selected = available_models[0]
+model_selected = available_models[5]
 
 stop_conversation = threading.Event()
 
@@ -44,7 +48,7 @@ def get_response(prompt):
     response = client.completions.create(
         model=model_selected,
         max_tokens=max_output_tokens,
-        prompt= prompt,
+        prompt= custom + prompt,
         stream=streaming
     )
 
@@ -72,18 +76,28 @@ def take_image():
         print("No camera found")
 
 def identify_image(image):
-    response = client.chat.completions.create(
-        model="llama-3-8b-instruct",
-        messages=[{
-            "role": "user",
-            "content": "What is the object I am holding?",
-            "images": [image]
-        }],
-    )
+    # Loading the image AI
+    model_name = "llava-v1-6-34b-hf-vllm"
+    model = LlavaForImageClassification.from_pretrained(model_name)
+    processor = LlavaProcessor.from_pretrained(model_name)
 
-    text = response["message"]["content"].strip()
-    print(f"Ohbot: {text}")
-    ohbot_text_to_speech(text)
+    # Preprocess the image
+    inputs = processor(images=image, return_tensors="pt")
+
+    # Generate the prompt
+    prompt = "What is this object?"
+
+    # Make the prediction
+    with torch.no_grad():
+        outputs = model(**inputs, labels=prompt)
+        logits = outputs.logits
+        predicted_class_idx = logits.argmax(-1).item()
+
+    # Identifying the object
+    identified_object = model.config.id2label[predicted_class_idx]
+    print(f"Ohbot: {identified_object}")
+    ohbot_text_to_speech(identified_object)
+
 
 def generate_unit_tests(file_path):
     with open(file_path, 'r') as file:
