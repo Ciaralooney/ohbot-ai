@@ -19,7 +19,7 @@ http_client=httpx.Client(verify=False)
 
 # Loading API key and URL for the AI
 client = OpenAI(
-    base_url=os.environ["url"] ,
+    base_url=os.environ["url"],
     http_client=http_client,
     api_key=os.environ["DEV_GENAI_API_KEY"]
 )
@@ -34,8 +34,6 @@ available_models = ["mixtral-8x7b-instruct-v01", "llamaguard-7b", "mistral-7b-in
 
 # Selecting a model
 model_selected = available_models[0]
-
-
 
 stop_conversation = threading.Event()
 
