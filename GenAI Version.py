@@ -4,7 +4,6 @@ from ohbot import ohbot
 import dotenv
 import speech_recognition as sr
 from openai._client import OpenAI
-
 from movement import *
 from pocketsphinx import LiveSpeech
 import tkinter as tk
@@ -14,21 +13,28 @@ import openai
 import httpx
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv('.env', override=True)
 
-# Creates HTTP client with not verification
-web_client = httpx.Client(verify=False)
-'''
-client = OpenAI(
-    base_url = os.getenv("url"),
-    key = os.getenv("OPENAI_API_KEY"),
-    http_client = web_client)
-    '''
+http_client=httpx.Client(verify=False)
 
+# Loading API key and URL for the AI
 client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),
-    base_url=os.getenv("url"),
-    http_client=web_client)
+    base_url=os.environ["url"] ,
+    http_client=http_client,
+    api_key=os.environ["DEV_GENAI_API_KEY"]
+)
+
+# Settings for our AI model
+streaming = True
+max_output_tokens = 200
+
+available_models = ["mixtral-8x7b-instruct-v01", "llamaguard-7b", "mistral-7b-instruct-v03", "phi-3-mini-128k-instruct",
+                    "phi-3-5-moe-instruct", "llama-3-8b-instruct", "llama-3-1-8b-instruct", "llama-3-2-3b-instruct",
+                    "codellama-13b-instruct", "sqlcoder-7b-2", "codestral-22b-v0-1"]
+
+# Selecting a model
+model_selected = available_models[0]
+
 
 
 stop_conversation = threading.Event()
@@ -37,17 +43,22 @@ def ohbot_text_to_speech(text):
     ohbot.say(text)
 
 def get_response(prompt):
-    response = client.chat.completions.create(
-        model="llama-3-8b-instruct",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
+    response = client.completions.create(
+        model=model_selected,
+        max_tokens=max_output_tokens,
+        prompt= prompt,
+        stream=streaming
     )
 
-    return response["message"]["content"]
+    response_text = ""
+    if streaming:
+        for chunk in response:
+            response_text += chunk.choices[0].text
+    else:
+        response_text = response.choices[0].text
+
+    return response_text
+
 
 def take_image():
     cam_port = 0
@@ -80,14 +91,11 @@ def generate_unit_tests(file_path):
     with open(file_path, 'r') as file:
         code = file.read()
 
-    response = client.chat.completions.create(
-        model="llama-3-8b-instruct",
-        messages=[
-            {
-                "role": "user",
-                "content": f"Generate unit tests for the following code:\n\n{code}"
-            }
-        ],
+    response = client.completions.create(
+        model=model_selected,
+        max_tokens=max_output_tokens,
+        prompt= f"Generate unit tests for the following code:\n\n{code}",
+        stream=streaming
     )
 
     unit_tests = response["message"]["content"]
