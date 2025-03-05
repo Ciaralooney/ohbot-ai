@@ -16,6 +16,12 @@ import httpx
 from dotenv import load_dotenv
 from PIL import Image
 import torch
+from datasets import load_dataset
+import requests
+
+response = requests.get('https://cdn-lfs.hf.co/your-url', verify=False)
+
+ds = load_dataset("bitext/Bitext-customer-support-llm-chatbot-training-dataset")
 
 load_dotenv('.env', override=True)
 
@@ -41,6 +47,14 @@ available_models = ["llama-3-8b-instruct", "mixtral-8x7b-instruct-v01", "llamagu
 model_selected = available_models[0]
 
 stop_conversation = threading.Event()
+
+def train_from_dataset():
+    print("Training has began...")
+    for example in ds['train']:
+        prompt = example['prompt']
+        response = get_response(prompt)
+        print(f"Training Prompt: {prompt}\nTraining Response: {response}\n")
+    print("Training has finished...")
 
 def ohbot_text_to_speech(text):
     ohbot.say(text)
@@ -156,6 +170,8 @@ if __name__ == '__main__':
     ohbot.reset()
     animation_thread = threading.Thread(target=background_animation)
     animation_thread.start()
+
+    train_from_dataset()
     while True:
         user_input = input("You: ")
         if user_input.lower() == "what is this":
