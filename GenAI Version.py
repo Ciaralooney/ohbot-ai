@@ -1,5 +1,6 @@
 import threading
 from cv2 import VideoCapture, imwrite
+from google.auth.transport import requests
 from ohbot import ohbot
 import dotenv
 import speech_recognition as sr
@@ -10,9 +11,9 @@ import tkinter as tk
 from tkinter import filedialog
 import os
 import openai
+import base64
 import httpx
 from dotenv import load_dotenv
-from transformers import LlavaForImageClassification, LlavaProcessor
 from PIL import Image
 import torch
 
@@ -32,12 +33,12 @@ streaming = True
 max_output_tokens = 200
 custom = os.getenv("custom_ai")
 
-available_models = ["mixtral-8x7b-instruct-v01", "llamaguard-7b", "mistral-7b-instruct-v03", "phi-3-mini-128k-instruct",
-                    "phi-3-5-moe-instruct", "llama-3-8b-instruct", "llama-3-1-8b-instruct", "llama-3-2-3b-instruct",
+available_models = ["llama-3-8b-instruct", "mixtral-8x7b-instruct-v01", "llamaguard-7b", "mistral-7b-instruct-v03", "phi-3-mini-128k-instruct",
+                    "phi-3-5-moe-instruct", "llama-3-1-8b-instruct", "llama-3-2-3b-instruct",
                     "codellama-13b-instruct", "sqlcoder-7b-2", "codestral-22b-v0-1"]
 
 # Selecting a model
-model_selected = available_models[5]
+model_selected = available_models[0]
 
 stop_conversation = threading.Event()
 
@@ -75,28 +76,49 @@ def take_image():
     else:
         print("No camera found")
 
-def identify_image(image):
-    # Loading the image AI
-    model_name = "llava-v1-6-34b-hf-vllm"
-    model = LlavaForImageClassification.from_pretrained(model_name)
-    processor = LlavaProcessor.from_pretrained(model_name)
 
-    # Preprocess the image
-    inputs = processor(images=image, return_tensors="pt")
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
 
-    # Generate the prompt
-    prompt = "What is this object?"
 
-    # Make the prediction
-    with torch.no_grad():
-        outputs = model(**inputs, labels=prompt)
-        logits = outputs.logits
-        predicted_class_idx = logits.argmax(-1).item()
+def identify_image(image_path):
+    # Encoding the image
+    base64_image = encode_image(image_path)
+    image_url = f"data:image/jpeg;base64,{base64_image}"
 
-    # Identifying the object
-    identified_object = model.config.id2label[predicted_class_idx]
-    print(f"Ohbot: {identified_object}")
-    ohbot_text_to_speech(identified_object)
+    image_models = ["llama-3-2-11b-vision-instruct", "llava-v1-6-34b-hf-vllm"]
+    selected_model = image_models[0]
+
+    completion = client.chat.completions.create(
+        model=selected_model,
+        messages=[{
+            "role": "user",
+            "content": [
+                {"type": "text",
+                 "text": "What object can you see on the image? You should just name the object. "
+                         "The answer should be one sentence at a maximum"},
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": image_url,
+                    },
+                },
+            ],
+        }],
+        stream=streaming
+    )
+
+    if streaming:
+        for chunk in completion:
+            if chunk.id:
+                if chunk.choices[0].delta.content is None and chunk.choices[0].delta.role is not None:
+                    print(chunk.choices[0].delta.role + ': ', end='')
+                elif chunk.choices[0].delta.content is not None:
+                    print(chunk.choices[0].delta.content, end='')
+    else:
+        print(completion.choices[0].message.role + ': ' + completion.choices[0].message.content)
+
 
 
 def generate_unit_tests(file_path):
