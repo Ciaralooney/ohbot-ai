@@ -68,7 +68,7 @@ This version is dependant on your own API key and internet connection but it is 
 
 To install the necessary python libraries you should run all of the commands below
 ```
-pip install os openai httpx dotenv transformers PIL torch
+pip install os datasets openai httpx dotenv transformers PIL torch
 ```
 ```
 pip install "comtypes==1.1.7"
@@ -81,4 +81,8 @@ pip install scikit-build cmake
 ```
 ```
 pip install opencv-python
+```
+
+```
+pip install -U "huggingface_hub[cli]"
 ```
