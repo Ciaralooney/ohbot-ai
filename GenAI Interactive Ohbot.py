@@ -16,12 +16,12 @@ import httpx
 from dotenv import load_dotenv
 from PIL import Image
 import torch
-from datasets import load_dataset
-import requests
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import make_pipeline
 
-response = requests.get('https://cdn-lfs.hf.co/your-url', verify=False)
-
-ds = load_dataset("bitext/Bitext-customer-support-llm-chatbot-training-dataset")
 
 load_dotenv('.env', override=True)
 
@@ -34,9 +34,10 @@ client = OpenAI(
     api_key=os.environ["DEV_GENAI_API_KEY"]
 )
 
-# Settings for our AI model
-streaming = True
-max_output_tokens = 200
+# Settings for my AI model
+streaming = False  # Makes answers more coherent
+#max_output_tokens = 200
+max_output_tokens = 50
 custom = os.getenv("custom_ai")
 
 available_models = ["llama-3-8b-instruct", "mixtral-8x7b-instruct-v01", "llamaguard-7b", "mistral-7b-instruct-v03", "phi-3-mini-128k-instruct",
@@ -48,13 +49,22 @@ model_selected = available_models[0]
 
 stop_conversation = threading.Event()
 
+
 def train_from_dataset():
-    print("Training has began...")
-    for example in ds['train']:
-        prompt = example['prompt']
-        response = get_response(prompt)
-        print(f"Training Prompt: {prompt}\nTraining Response: {response}\n")
-    print("Training has finished...")
+    df = pd.read_csv('Conversation.csv')
+
+    # Preprocessing data
+    df['text'] = df['question'] + ' ' + df['answer']
+    df = df.drop(columns=['Unnamed: 0', 'question', 'answer'])
+
+    # Splitting data into training and validation sets
+    X_train, X_val, y_train, y_val = train_test_split(df['text'], df['text'], test_size=0.2, random_state=42)
+
+    model = make_pipeline(CountVectorizer(), MultinomialNB())
+
+    # Training model
+    model.fit(X_train, y_train)
+
 
 def ohbot_text_to_speech(text):
     ohbot.say(text)
@@ -64,7 +74,8 @@ def get_response(prompt):
         model=model_selected,
         max_tokens=max_output_tokens,
         prompt= custom + prompt,
-        stream=streaming
+        stream=streaming,
+        temperature=0.5
     )
 
     response_text = ""
