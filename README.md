@@ -86,3 +86,6 @@ pip install opencv-python
 ```
 pip install -U "huggingface_hub[cli]"
 ```
+## Training AI from a Dataset
+
+Make sure to download the excel file in github or from the original source: https://www.kaggle.com/datasets/kreeshrajani/3k-conversations-dataset-for-chatbot?resource=download 
