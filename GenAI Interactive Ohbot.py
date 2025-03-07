@@ -1,27 +1,18 @@
-import threading
-from cv2 import VideoCapture, imwrite
-from google.auth.transport import requests
-from ohbot import ohbot
-import dotenv
-import speech_recognition as sr
-from openai._client import OpenAI
-from movement import *
-from pocketsphinx import LiveSpeech
-import tkinter as tk
-from tkinter import filedialog
-import os
-import openai
 import base64
+import os
+from datetime import datetime
+from tkinter import *
+from tkinter import filedialog
 import httpx
-from dotenv import load_dotenv
-from PIL import Image
-import torch
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from cv2 import VideoCapture, imwrite
+from dotenv import load_dotenv
+from openai import OpenAI
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import make_pipeline
-
+from movement import *
 
 load_dotenv('.env', override=True)
 
@@ -162,22 +153,80 @@ def generate_unit_tests(file_path):
     ohbot_text_to_speech("I have created unit tests for you in the same folder as your code. Check it out")
 
 def browse_file():
-    file_path = filedialog.askopenfilename()
-    return file_path
+    def browseFiles():
+        filename = filedialog.askopenfilename(initialdir="/",
+                                              title="Select a File",
+                                              filetypes=(
+                                                         ("all files",
+                                                          "*.*"),
+                                                         ("Text files",
+                                                          "*.txt*")
+                                                         ))
 
-def create_gui():
-    root = tk.Tk()
-    root.title("Unit Test Generator")
-    browse_button = tk.Button(root, text="Browse", command=browse_file)
-    browse_button.pack(pady=20)
-    root.mainloop()
+        # Change label contents
+        label_file_explorer.configure(text="File Opened: " + filename)
+
+        # Store the file path in a variable
+        global file_path
+        file_path = filename
+
+    # Create the root window
+    window = Tk()
+
+    # Set window title
+    window.title('File Explorer')
+
+    # Set window size
+    window.geometry("500x500")
+
+    # Set window background color
+    window.config(background="white")
+
+    # Create a File Explorer label
+    label_file_explorer = Label(window,
+                                text="File Explorer using Tkinter",
+                                width=100, height=4,
+                                fg="blue")
+
+    button_explore = Button(window,
+                            text="Browse Files",
+                            command=browseFiles)
+
+    button_exit = Button(window,
+                         text="Exit",
+                         command=window.quit)
+
+    # Grid method is chosen for placing
+    # the widgets at respective positions
+    # in a table like structure by
+    # specifying rows and columns
+    label_file_explorer.grid(column=1, row=1)
+
+    button_explore.grid(column=1, row=2)
+
+    button_exit.grid(column=1, row=3)
+
+    # Let the window wait for any events
+    window.mainloop()
 
 def background_animation():
     while not stop_conversation.is_set():
         natural_head_movement()
         random_blink()
 
+# def write_docstrings():
+    # test
+
+def write_documentation():
+    timestamp = datetime.now()
+    filename = f"Code Documentation {timestamp}.txt"
+    file = open(filename, "w")
+
+    file.write("hello")
+    file.close()
+
 if __name__ == '__main__':
+
     ohbot.reset()
     animation_thread = threading.Thread(target=background_animation)
     animation_thread.start()
@@ -190,6 +239,7 @@ if __name__ == '__main__':
             identify_image(captured_photo)
         elif user_input.lower() == "unit tests":
             file_path = browse_file()
+            print("Selected file path:", file_path)
             generate_unit_tests(file_path)
         elif user_input.lower() == "exit":
             stop_conversation.set()
