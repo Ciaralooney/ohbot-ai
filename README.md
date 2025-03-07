@@ -68,6 +68,9 @@ This version is dependant on your own API key and internet connection but it is 
 
 To install the necessary python libraries you should run all of the commands below
 ```
+pip install google-auth
+```
+```
 pip install os datasets openai httpx dotenv transformers PIL torch
 ```
 ```
