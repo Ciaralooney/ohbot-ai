@@ -67,9 +67,7 @@ I have switched to using this in my code but left the option for llama3 for anyo
 This version is dependant on your own API key and internet connection but it is much faster. 
 
 To install the necessary python libraries you should run all of the commands below
-```
-pip install google-auth
-```
+
 ```
 pip install os datasets openai httpx dotenv transformers PIL torch
 ```
