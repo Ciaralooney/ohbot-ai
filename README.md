@@ -99,3 +99,4 @@ pip install streamlit
 ```
  streamlit run '.\GenAI with Streamlit version.py'
 ```
+Ensure you have the txt file downloaded and in the same directory. Txt file source: https://github.com/first20hours/google-10000-english/blob/master/google-10000-english-usa-no-swears-long.txt
