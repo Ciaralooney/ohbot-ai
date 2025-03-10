@@ -100,3 +100,14 @@ pip install streamlit
  streamlit run '.\GenAI with Streamlit version.py'
 ```
 Ensure you have the txt file downloaded and in the same directory. Txt file source: https://github.com/first20hours/google-10000-english/blob/master/google-10000-english-usa-no-swears-long.txt
+
+# .env File
+Your .env file should have the following parameters
+```
+DEV_GENAI_API_KEY="your api key goes here"
+url="GEN AI development website url goes here"
+custom_ai="This should be your prompt to set up your AI bot initially "
+code_documentation="custom prompt to fine tune code documentation output"
+unit_tests="custom prompt to fine tune unit tests output"
+docstrings="custom prompt to fine tune doc strings output"
+```
