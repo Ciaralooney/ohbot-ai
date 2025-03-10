@@ -1,10 +1,12 @@
 import base64
 import os
+import random
 from datetime import datetime
 from tkinter import *
 from tkinter import filedialog
 import httpx
 import pandas as pd
+import streamlit as st
 from cv2 import VideoCapture, imwrite
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -12,9 +14,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import make_pipeline
+
 from movement import *
-import streamlit as st
-import random
 
 load_dotenv('.env', override=True)
 
@@ -154,59 +155,14 @@ def generate_unit_tests(file_path):
     print("Generated Unit Tests:\n", unit_tests)
     ohbot_text_to_speech("I have created unit tests for you in the same folder as your code. Check it out")
 
-def browse_file():
-    def browseFiles():
-        filename = filedialog.askopenfilename(initialdir="/",
-                                              title="Select a File",
-                                              filetypes=(
-                                                         ("all files",
-                                                          "*.*"),
-                                                         ("Text files",
-                                                          "*.txt*")
-                                                         ))
 
-        # Change label contents
-        label_file_explorer.configure(text="File Opened: " + filename)
-        return filename
+def choose_file():
+    file_path = filedialog.askopenfilename(initialdir="/",
+                                           title="Select a File",
+                                           filetypes=(("all files", "*.*"),
+                                                      ("Text files", "*.txt*")))
 
-    # Create the root window
-    window = Tk()
-
-    # Set window title
-    window.title('File Explorer')
-
-    # Set window size
-    window.geometry("500x500")
-
-    # Set window background color
-    window.config(background="white")
-
-    # Create a File Explorer label
-    label_file_explorer = Label(window,
-                                text="File Explorer using Tkinter",
-                                width=100, height=4,
-                                fg="blue")
-
-    button_explore = Button(window,
-                            text="Browse Files",
-                            command=browseFiles)
-
-    button_exit = Button(window,
-                         text="Exit",
-                         command=window.quit)
-
-    # Grid method is chosen for placing
-    # the widgets at respective positions
-    # in a table like structure by
-    # specifying rows and columns
-    label_file_explorer.grid(column=1, row=1)
-
-    button_explore.grid(column=1, row=2)
-
-    button_exit.grid(column=1, row=3)
-
-    # Let the window wait for any events
-    window.mainloop()
+    return file_path
 
 def background_animation():
     while not stop_conversation.is_set():
@@ -216,12 +172,20 @@ def background_animation():
 # def write_docstrings():
     # test
 
-def write_documentation():
-    timestamp = datetime.now()
-    filename = f"Code Documentation {timestamp}.txt"
-    file = open(filename, "w")
+def write_documentation(code):
+    response = client.completions.create(
+        model=model_selected,
+        max_tokens=200,
+        prompt= f"Write a report about the code included:\n\n{code}",
+        stream=streaming
+    )
 
-    file.write("hello")
+    documentation = response.choices[0].text
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"Code Documentation {timestamp}.txt"
+    with open(filename, "w") as file:
+        file.write(documentation)
+
     file.close()
 
 def read_file(path):
@@ -235,7 +199,7 @@ def generate_key(words):
 
 if __name__ == '__main__':
     st.title("Ohbot AI")
-    st.write("Welcome to the AI Assistant application!")
+    st.write("Welcome!")
 
     ohbot.reset()
     animation_thread = threading.Thread(target=background_animation)
@@ -243,23 +207,26 @@ if __name__ == '__main__':
 
     words = read_file("words.txt")
     train_from_dataset()
-    while True:
-        unique_key = generate_key(words)
-        user_input = st.text_input("You: ", key=unique_key)
-        if user_input:
-            if user_input.lower() == "what is this":
-                captured_photo = take_image()
-                identify_image(captured_photo)
-            elif user_input.lower() == "unit tests":
-                file_path = browse_file()
-                st.write("Selected file path:", file_path)
-                generate_unit_tests(file_path)
-            elif user_input.lower() == "exit":
-                stop_conversation.set()
-                shutdown()
-                break
-            fetched_response = get_response(user_input)
-            st.write(f"Ohbot: {fetched_response}")
-            ohbot_text_to_speech(fetched_response)
+    user_input = st.text_input("You: ")
+    if user_input:
+        if user_input.lower() == "what is this":
+            captured_photo = take_image()
+            identify_image(captured_photo)
+        elif user_input.lower() == "documentation":
+            file_path = choose_file()
+            code = read_file(file_path)
+            write_documentation(code)
+        #elif user_input.lower() == "docstrings":
+        elif user_input.lower() == "unit tests":
+            file_path = choose_file()
+            code = read_file(file_path)
+            generate_unit_tests(code)
+        elif user_input.lower() == "exit":
+            stop_conversation.set()
+            shutdown()
+            exit(0)
+        fetched_response = get_response(user_input)
+        st.write(f"Ohbot: {fetched_response}")
+        ohbot_text_to_speech(fetched_response)
     animation_thread.join()
     shutdown()
