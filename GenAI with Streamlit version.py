@@ -10,6 +10,7 @@ import streamlit as st
 from cv2 import VideoCapture, imwrite
 from dotenv import load_dotenv
 from openai import OpenAI
+from pyarrow import timestamp
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
@@ -34,6 +35,8 @@ streaming = False  # Makes answers more coherent
 max_output_tokens = 50
 custom = os.getenv("custom_ai")
 custom_prompt = os.getenv("code_documentation")
+custom_prompt_tests = os.getenv("unit_tests")
+custom_prompt_docstrings =  os.getenv("docstrings")
 
 
 available_models = ["llama-3-8b-instruct", "mixtral-8x7b-instruct-v01", "llamaguard-7b", "mistral-7b-instruct-v03", "phi-3-mini-128k-instruct",
@@ -142,20 +145,27 @@ def identify_image(image_path):
 
 
 
-def generate_unit_tests(file_path):
-    with open(file_path, 'r') as file:
-        code = file.read()
+def generate_unit_tests(code):
 
     response = client.completions.create(
         model=model_selected,
-        max_tokens=max_output_tokens,
-        prompt= f"Generate unit tests for the following code:\n\n{code}",
+        max_tokens=1000,
+        prompt= custom_prompt_tests + f"{code}",
         stream=streaming
     )
 
-    unit_tests = response["message"]["content"]
-    print("Generated Unit Tests:\n", unit_tests)
+    unit_tests = response.choices[0].text
     ohbot_text_to_speech("I have created unit tests for you in the same folder as your code. Check it out")
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"Unit Tests {timestamp}.txt"
+    print(f"File generated: {filename}")
+    ohbot_text_to_speech("I have created documentation for you. Check it out")
+
+    with open(filename, "w") as file:
+        file.write(unit_tests)
+
+    file.close()
 
 
 def choose_file():
@@ -171,13 +181,33 @@ def background_animation():
         natural_head_movement()
         random_blink()
 
-# def write_docstrings():
-    # test
+def get_time():
+    time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    return time
+
+def write_docstrings(code):
+    response = client.completions.create(
+        model=model_selected,
+        max_tokens=1000,
+        prompt= custom_prompt_docstrings + f"{code}",
+        stream=streaming
+    )
+
+    docstrings = response.choices[0].text
+    timestamp = get_time()
+    filename = f"Docstrings {timestamp}.txt"
+    print(f"File generated: {filename}")
+    ohbot_text_to_speech("I have created docstrings for you in a new file to review. Check it out")
+
+    with open(filename, "w") as file:
+        file.write(docstrings)
+
+    file.close()
 
 def write_documentation(code):
     response = client.completions.create(
         model=model_selected,
-        max_tokens=200,
+        max_tokens=1000,
         prompt= custom_prompt + f"{code}",
         stream=streaming
     )
@@ -185,6 +215,9 @@ def write_documentation(code):
     documentation = response.choices[0].text
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = f"Code Documentation {timestamp}.txt"
+    print(f"File generated: {filename}")
+    ohbot_text_to_speech("I have created documentation for you. Check it out")
+
     with open(filename, "w") as file:
         file.write(documentation)
 
@@ -218,7 +251,10 @@ if __name__ == '__main__':
             file_path = choose_file()
             code = read_file(file_path)
             write_documentation(code)
-        #elif user_input.lower() == "docstrings":
+        elif user_input.lower() == "docstrings":
+            file_path = choose_file()
+            code = read_file(file_path)
+            write_docstrings(code)
         elif user_input.lower() == "unit tests":
             file_path = choose_file()
             code = read_file(file_path)
