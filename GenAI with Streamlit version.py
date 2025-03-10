@@ -33,6 +33,8 @@ streaming = False  # Makes answers more coherent
 #max_output_tokens = 200
 max_output_tokens = 50
 custom = os.getenv("custom_ai")
+custom_prompt = os.getenv("code_documentation")
+
 
 available_models = ["llama-3-8b-instruct", "mixtral-8x7b-instruct-v01", "llamaguard-7b", "mistral-7b-instruct-v03", "phi-3-mini-128k-instruct",
                     "phi-3-5-moe-instruct", "llama-3-1-8b-instruct", "llama-3-2-3b-instruct",
@@ -176,7 +178,7 @@ def write_documentation(code):
     response = client.completions.create(
         model=model_selected,
         max_tokens=200,
-        prompt= f"Write a report about the code included:\n\n{code}",
+        prompt= custom_prompt + f"{code}",
         stream=streaming
     )
 
