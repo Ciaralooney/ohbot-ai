@@ -4,7 +4,7 @@
 ## Python Setup
 Download [Pycharm](https://www.jetbrains.com/pycharm/download/?section=windows)
 
-Download and setup [python 3.10](https://www.python.org/downloads/release/python-3100/)
+Download and setup [python 3.12](https://www.python.org/downloads/release/python-3120/)
 
 Download the following python libraries using these commands
 ```
@@ -91,15 +91,19 @@ pip install -U "huggingface_hub[cli]"
 
 Make sure to download the excel file in github or from the original source: https://www.kaggle.com/datasets/kreeshrajani/3k-conversations-dataset-for-chatbot?resource=download 
 
+Ensure you have the txt file downloaded and in the same directory. Txt file source: https://github.com/first20hours/google-10000-english/blob/master/google-10000-english-usa-no-swears-long.txt
+
 # Streamlit
 To utilise streamlit with this 
 ```
 pip install streamlit
 ```
 ```
+streamlit hello
+```
+```
  streamlit run '.\GenAI with Streamlit version.py'
 ```
-Ensure you have the txt file downloaded and in the same directory. Txt file source: https://github.com/first20hours/google-10000-english/blob/master/google-10000-english-usa-no-swears-long.txt
 
 # .env File
 Your .env file should have the following parameters
